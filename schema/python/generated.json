@@ -1,0 +1,376 @@
+{
+  "properties": {
+    "dependencies": {
+      "description": "list of artifact dependencies",
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/abstract-dependency"
+        },
+        {
+          "$ref": "#/definitions/range-dependency"
+        },
+        {
+          "$ref": "#/definitions/version-dependency"
+        },
+        {
+          "$ref": "#/definitions/not-version-dependency"
+        },
+        {
+          "$ref": "#/definitions/and-version-dependency"
+        },
+        {
+          "$ref": "#/definitions/or-version-dependency"
+        }
+      ],
+      "uniqueItems": true
+    },
+    "licenses": {
+      "description": "licenses applicable to the artifact",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "manifest_version": {
+      "$ref": "#/definitions/version"
+    },
+    "artifact_version": {
+      "$ref": "#/definitions/version"
+    },
+    "sources": {
+      "description": "all source archives for the artifact",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/archive"
+      }
+    },
+    "provides": {
+      "description": "list of provided files",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/file-provide"
+      }
+    },
+    "name": {
+      "description": "name of the artifact",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_\\-\\.]*$"
+    },
+    "origin": {
+      "format": "uri",
+      "description": "authoritative source of the artifact",
+      "type": "string"
+    }
+  },
+  "type": "object",
+  "required": [
+    "artifact_version",
+    "manifest_version",
+    "name"
+  ],
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "file-trait": {
+      "properties": {
+        "is_source": {
+          "description": "true for source files",
+          "type": "boolean"
+        },
+        "language": {
+          "description": "implementation language",
+          "type": "string"
+        },
+        "is_library": {
+          "description": "true for library binaries",
+          "type": "boolean"
+        },
+        "is_executable": {
+          "description": "true for executable binaries",
+          "type": "boolean"
+        },
+        "is_header": {
+          "description": "true for header files",
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "required": [
+        "language"
+      ],
+      "additionalProperties": false
+    },
+    "archive": {
+      "properties": {
+        "uri": {
+          "format": "uri",
+          "description": "location of the archive",
+          "type": "string"
+        },
+        "hash": {
+          "description": "sha256 digest of the archive",
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{32}$"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
+    },
+    "abstract-dependency": {
+      "properties": {
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "abstract-dependency"
+          ]
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "version-dependency": {
+      "properties": {
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "varsion-dependency"
+          ]
+        },
+        "version": {
+          "$ref": "#/definitions/version"
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "range-dependency": {
+      "properties": {
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "range-dependency"
+          ]
+        },
+        "range": {
+          "$ref": "#/definitions/version-range"
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "range"
+      ],
+      "additionalProperties": false
+    },
+    "or-version-dependency": {
+      "properties": {
+        "items": {
+          "description": "items to join with OR",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/abstract-dependency"
+          }
+        },
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "or-version-dependency"
+          ]
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "and-version-dependency": {
+      "properties": {
+        "items": {
+          "description": "items to join with AND",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/abstract-dependency"
+          }
+        },
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "and-version-dependency"
+          ]
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "file-provide": {
+      "properties": {
+        "uri": {
+          "format": "uri",
+          "description": "chroot relative uri of the file",
+          "type": "string"
+        },
+        "name": {
+          "description": "basename of the file",
+          "type": "string"
+        },
+        "hash": {
+          "description": "sha256 digest of the file",
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{32}$"
+        },
+        "architecture": {
+          "description": "architecture description string",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_\\-\\.]*$"
+        },
+        "traits": {
+          "description": "traits of the file",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/file-trait"
+          }
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
+    },
+    "version": {
+      "properties": {
+        "minor": {
+          "maximum": 999,
+          "description": "minor version number",
+          "type": "number",
+          "minimum": 0
+        },
+        "build": {
+          "maximum": 999,
+          "description": "build version number",
+          "type": "number",
+          "minimum": 0
+        },
+        "major": {
+          "maximum": 999,
+          "description": "major version number",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "type": "object",
+      "required": [
+        "major"
+      ],
+      "additionalProperties": false
+    },
+    "version-range": {
+      "properties": {
+        "end_exclusive": {
+          "description": "make the end specification exclusive",
+          "type": "boolean"
+        },
+        "version_start": {
+          "$ref": "#/definitions/version"
+        },
+        "start_exclusive": {
+          "description": "make the start specification exclusive",
+          "type": "boolean"
+        },
+        "version_end": {
+          "$ref": "#/definitions/version"
+        }
+      },
+      "type": "object",
+      "required": [
+        "version_start",
+        "version_end"
+      ],
+      "additionalProperties": false
+    },
+    "not-version-dependency": {
+      "properties": {
+        "target": {
+          "$ref": "#/definitions/abstract-dependency"
+        },
+        "name": {
+          "description": "name of the dependency",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "not-version-dependency"
+          ]
+        },
+        "source": {
+          "format": "uri",
+          "description": "URI source of the dependency",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "target"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
